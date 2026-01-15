@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chroma-decoder"
+dynamic = ["version"]
+description = 'Single-Player Digital version of a Mastermind]-like game'
+readme = "README.md"
+requires-python = ">=3.14"
+license = "GNU GPLv3"
+keywords = ["mastermind"]
+authors = [
+  { name = "Craig N. Caroon", email = "craig@caroon.org" },
+]
+dependencies = []
+
+[project.urls]
+Documentation = "https://github.com/ccaroon/chroma-decoder#readme"
+Issues = "https://github.com/ccaroon/chroma-decoder/issues"
+Source = "https://github.com/ccaroon/chroma-decoder"
+
+[tool.hatch.version]
+path = "src/chroma_decoder/version.py"
+
+[tool.coverage.run]
+source_pkgs = ["chroma_decoder", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/chroma_decoder/version.py",
+]
+
+[tool.coverage.paths]
+chroma_decoder = ["src/chroma_decoder", "*/chroma-decoder/src/chroma_decoder"]
+tests = ["tests", "*/chroma-decoder/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
