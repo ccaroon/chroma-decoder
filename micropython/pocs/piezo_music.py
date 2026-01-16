@@ -33,6 +33,7 @@ def play(seq):
     if count := _parse(seq):
         buf_play[BUF_TOP] = count
         buf_play[BUF_POS] = DATA_START
+        print(buf_play)
         buf_play[PLAYING] = 1
         _handler(None)
 
@@ -49,6 +50,8 @@ def stop():
 def isplaying():
     return buf_play[PLAYING]
 
+
+setup(Pin(2, Pin.OUT), -1)
 
 ### internals
 
@@ -73,11 +76,14 @@ def _handler(junk):
 
     if f == 0:  # rest
         pwm.duty_u16(0)
+        print("rest")
     elif f == 1:  # click
         pwm.duty_u16(65535)
+        print("click")
     else:  # tone
         pwm.duty_u16(duty)
         pwm.freq(f)
+        print(f"tone [d{duty}, f{f}]")
 
     duration = d & 0x1FFF
     note_off = ((duration * (d >> 13)) >> 3) if f else 0
@@ -86,8 +92,10 @@ def _handler(junk):
     if note_off:
         _buf[NOTE_OFF] = note_off
         timer.init(period=duration - note_off, mode=Timer.ONE_SHOT, callback=_noteoff)
+        print("noteoff")
     else:
         timer.init(period=duration, mode=Timer.ONE_SHOT, callback=_handler)
+        print("next note")
 
 
 def _noteoff(junk):
@@ -286,10 +294,10 @@ MicroPython Music Player Module
 
 This module provides a lightweight, interrupt-driven music player that uses PWM
 to generate tones based on a compact ASCII music string format similar to that used
-by Microsoft Extended BASIC's PLAY function.  
-    
+by Microsoft Extended BASIC's PLAY function.
+
 Useful for creating simple tunes and sound effects from an attached piezo speaker
-    
+
 
 === USER GUIDE: MUSIC STRING FORMAT ===
 
@@ -320,7 +328,7 @@ Octave control:
 
 Looping:
   [<number>       - Start of loop segment. If no number, loops once
-  ]               - End of loop segment.  No nested loops. 
+  ]               - End of loop segment.  No nested loops.
                     Transposition and octave changes "stack" within loops
 
 Tempo & timing:
@@ -351,7 +359,7 @@ Playing music:
   - isplaying(): returns 1 if music is playing, 0 if not
 
 Interrupts:
-  - Uses a periodic hardware timer for note start/stop 
+  - Uses a periodic hardware timer for note start/stop
   - Handler is implemented in Viper mode for speed.
   - Interrupts shut off when not needed
 
@@ -378,15 +386,15 @@ Limitations:
   - Max note frequency limited by PWM and data format (up to B8 - 7902Hz)
   - Only one sequence can play at a time.
   - No polyphony (monophonic output only).
-    
-    
+
+
 === OPTIONAL RTTTL (ringtone text transfer language) TRANSLATOR ===
-    
+
 Use to translate ringtones into the format used here:
-    
+
 e.g. PacMan:d=16,o=6,b=140:b5,b,f#,d#,8b,8d#,c,c7,g,f,8c7,8e,b5,b,f#,d#,8b,8d#,32d#,32e,f,32f,32f#,g,32g,32g#,a,8b
 translates to: T140L16O6<B>BF#D#B8D#8C>C<GF>C8<E8<B>BF#D#B8D#8D#32E32FF32F#32GG32G#32AB8
-    
+
 def rtttl_to_music(rtttl):
     _, d, n = rtttl.split(":", 2)
     bd = od = dd = ""
@@ -433,6 +441,6 @@ def rtttl_to_music(rtttl):
             out.append(dur)
 
     return "".join(out)
-    
+
 
 """

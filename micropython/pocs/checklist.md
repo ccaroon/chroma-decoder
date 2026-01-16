@@ -4,5 +4,7 @@
 * [x] NeoPixel
 * [x] Piezo
 * [ ] Pots
-* [ ] Button
+  - [ ] Regular
+  - [ ] NeoPot
+* [x] Button
 * [ ] NeoPixel Matrix

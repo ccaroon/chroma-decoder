@@ -6,30 +6,40 @@ import random
 buzzer = PWM(Pin(2))
 
 
-def play_tone(frequency):
+def play(freq, duty=1000):
     # Set maximum volume
-    buzzer.duty_u16(1000)
+    buzzer.duty_u16(duty)
     # Play tone
-    buzzer.freq(frequency)
+    buzzer.freq(freq)
 
 
-def be_quiet():
+def stop():
     # Set minimum volume
     buzzer.duty_u16(0)
 
 
-# play_tone(65)
+def test0():
+    play(523, 32768)
 
 
-def thing1():
-    start_value = random.randint(150, 1450)
-    for i in range(48):
-        play_tone(start_value - i)
-        sleep(0.001)
+# play(65)
+# tone [d32768, f523]
 
 
-def thing2():
-    start_value = random.randint(120, 220)
-    for i in range(-90, 90):
-        play_tone(start_value + abs(i))
-        sleep(0.008)
+def test1():
+    start_value = random.randint(250, 768)
+    for i in range(50):
+        play(start_value - i, 32768)
+        sleep(0.01)
+
+    stop()
+
+
+def siren(repeat=1, length=90):
+    start_value = random.randint(500, 1000)
+    for _ in range(repeat):
+        for i in range(-length, length):
+            play(start_value + abs(i), 32768)
+            sleep(0.01)
+
+    stop()
