@@ -5,15 +5,15 @@ build-backend = "hatchling.build"
 [project]
 name = "chroma-decoder"
 dynamic = ["version"]
-description = 'Single-Player Digital version of a Mastermind]-like game'
+description = 'Single-Player Digital version of a Mastermind-like game'
 readme = "README.md"
 requires-python = ">=3.14"
-license = "GNU GPLv3"
+license = "GPL-3.0-only"
 keywords = ["mastermind"]
-authors = [
-  { name = "Craig N. Caroon", email = "craig@caroon.org" },
+authors = [{ name = "Craig N. Caroon", email = "craig@caroon.org" }]
+dependencies = [
+  "virtual-led-matrix @ git+https://github.com/ccaroon/virtual-led-matrix@master",
 ]
-dependencies = []
 
 [project.urls]
 Documentation = "https://github.com/ccaroon/chroma-decoder#readme"
@@ -21,23 +21,10 @@ Issues = "https://github.com/ccaroon/chroma-decoder/issues"
 Source = "https://github.com/ccaroon/chroma-decoder"
 
 [tool.hatch.version]
-path = "src/chroma_decoder/version.py"
+path = "version.py"
 
-[tool.coverage.run]
-source_pkgs = ["chroma_decoder", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/chroma_decoder/version.py",
-]
+[tool.hatch.metadata]
+allow-direct-references = true
 
-[tool.coverage.paths]
-chroma_decoder = ["src/chroma_decoder", "*/chroma-decoder/src/chroma_decoder"]
-tests = ["tests", "*/chroma-decoder/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+[tool.hatch.build.targets.wheel]
+packages = ["chroma-decoder.py"]

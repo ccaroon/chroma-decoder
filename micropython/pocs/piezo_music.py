@@ -2,9 +2,9 @@
 # 2025 Shea M Puckett
 # Apache 2.0 License e.g. you're on your own
 
-from machine import Pin, PWM, Timer
 import array
 
+from machine import PWM, Pin, Timer
 
 buf_play = array.array("H", bytearray(32))
 BUF_POS = const(0)

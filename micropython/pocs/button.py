@@ -24,8 +24,9 @@
 # -----------------------------------------------------------
 
 # IRQ Based
-from machine import Pin
 import time
+
+from machine import Pin
 
 count = 0
 button = Pin(2, Pin.IN, Pin.PULL_UP)

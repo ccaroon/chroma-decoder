@@ -1,6 +1,7 @@
-from machine import Pin, PWM
-from utime import sleep
 import random
+
+from machine import PWM, Pin
+from utime import sleep
 
 # Set GPIO pin for audio output
 buzzer = PWM(Pin(2))

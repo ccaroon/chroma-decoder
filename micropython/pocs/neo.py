@@ -1,5 +1,6 @@
-import time
 import random
+import time
+
 from machine import Pin
 from neopixel import NeoPixel
 
