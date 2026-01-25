@@ -6,4 +6,4 @@
 * [x] Pots
   - [x] NeoPot -> `neopot.py`
 * [x] Button   -> `button.py`
-* [ ] NeoPixel Matrix
+* [x] NeoPixel Matrix
