@@ -1,5 +1,3 @@
-import time
-
 from machine import ADC, Pin
 from neopixel import NeoPixel
 
@@ -14,12 +12,12 @@ from neopixel import NeoPixel
 # ----------------------------------
 
 COLOR_LIST = [
-    (255, 0, 0),   # red
+    (255, 0, 0),  # red
     # (255, 128, 0), # orange
     # (255, 255, 0), # yellow
-    (0, 255, 0),   # green
-    (0, 0, 255),   # blue
-    (128, 0, 255), # purple
+    (0, 255, 0),  # green
+    (0, 0, 255),  # blue
+    (128, 0, 255),  # purple
 ]
 NUM_COLORS = len(COLOR_LIST)
 
@@ -32,12 +30,14 @@ pots = ADC(Pin(26))
 
 pots_buffer = []
 
+
 def average(values):
     avg = 0
     if values:
         avg = sum(values) / len(values)
 
     return avg
+
 
 prev_clr_idx = None
 while True:

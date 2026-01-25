@@ -28,7 +28,7 @@ class ChromaDecoder(Program):
             # --- support colors ---
             "off": Color.make("black"),
             "white": Color.make("white"),
-            "ok_green": Color.make("#49e948")
+            "ok_green": Color.make("#49e948"),
         }
         self.__color_list = list(self.__colors.values())
 
@@ -50,13 +50,13 @@ class ChromaDecoder(Program):
                 print(f"Key Pressed [{key_name}]")
 
     def loop(self):
-        for x in range(0, 5):
-            for y in range(0, 8):
+        for x in range(5):
+            for y in range(8):
                 self.matrix.set_led(x, y, self.__color_list[y])
 
-        self.matrix.set_led(2,7,self.__colors["off"])
-        self.matrix.set_led(3,7,self.__colors["white"])
-        self.matrix.set_led(4,7,self.__colors["ok_green"])
+        self.matrix.set_led(2, 7, self.__colors["off"])
+        self.matrix.set_led(3, 7, self.__colors["white"])
+        self.matrix.set_led(4, 7, self.__colors["ok_green"])
 
         self.matrix.update()
         time.sleep(0.50)
