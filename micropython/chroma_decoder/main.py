@@ -87,7 +87,7 @@ rotary = RotaryIRQ(
     Pin(4, Pin.IN, Pin.PULL_UP),
     Pin(5, Pin.IN, Pin.PULL_UP),
     min_val=0,
-    max_val=7,
+    max_val=COLOR_COUNT - 1,
     incr=1,
     reverse=False,
     range_mode=RotaryIRQ.RANGE_WRAP,

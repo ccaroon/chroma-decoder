@@ -1,0 +1,12 @@
+---
+package: chroma_decoder
+
+main: chroma_decoder/main.py
+
+# boot:
+
+# libs:
+#   - file.py
+
+requirements:
+  - github:miketeachman/micropython-rotary
