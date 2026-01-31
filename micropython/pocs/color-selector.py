@@ -52,6 +52,7 @@ button = Pin(2, Pin.IN, Pin.PULL_UP)
 def check_button(btn):
     global active_pixel
     global active_color
+    global rotary
 
     if btn.value() == 0:
         # incase it's off b/c of blinky, blinky
@@ -64,13 +65,19 @@ def check_button(btn):
         if neo[active_pixel] == COLORS["off"]:
             neo[active_pixel] = SHOW_COLORS[active_color]
         else:
-            # neo[active_pixel] =
-            active_color = neo[active_pixel]
+            active_color = SHOW_COLORS.index(neo[active_pixel])
+            # update the rotary so that the next turn will start
+            # where the pixel left off
+            rotary.set(value=active_color)
 
         neo.write()
 
+        # Debounce
+        while btn.value() == 0:
+            pass
+        time.sleep_ms(10)
 
-# button.irq(trigger=Pin.IRQ_FALLING, handler=check_button)
+button.irq(trigger=Pin.IRQ_FALLING, handler=check_button)
 
 
 # The Rotary Encoder
@@ -102,7 +109,9 @@ while True:
         neo.write()
 
     # Check Button
-    check_button(button)
+    # check_button(button)
+    # --or--
+    # IRQ callback set on button Pin (above)
 
     blink_active_pixel()
 
