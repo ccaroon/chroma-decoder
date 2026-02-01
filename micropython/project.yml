@@ -9,4 +9,5 @@ main: chroma_decoder/main.py
 #   - file.py
 
 requirements:
+  # https://github.com/miketeachman/micropython-rotary
   - github:miketeachman/micropython-rotary
