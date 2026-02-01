@@ -28,30 +28,3 @@ class Controls:
     @property
     def dial(self):
         return self.__dial
-
-    # def __handle_button(self, btn):
-    #     global active_pixel
-    #     global active_color
-
-    #     if btn.value() == 0:
-    #         # incase it's off b/c of blinky, blinky
-    #         neo[active_pixel] = SHOW_COLORS[active_color]
-
-    #         active_pixel += 1
-    #         if active_pixel >= PIXEL_COUNT:
-    #             active_pixel = 0
-
-    #         if neo[active_pixel] == COLORS["off"]:
-    #             neo[active_pixel] = SHOW_COLORS[active_color]
-    #         else:
-    #             active_color = SHOW_COLORS.index(neo[active_pixel])
-    #             # update the rotary so that the next turn will start
-    #             # where the pixel left off
-    #             self.__dial.set(value=active_color)
-
-    #         neo.write()
-
-    #         # Debounce
-    #         while btn.value() == 0:
-    #             pass
-    #         time.sleep_ms(10)

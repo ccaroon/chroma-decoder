@@ -52,7 +52,7 @@ class Display:
 
     def activate_next_pixel(self):
         self.__active_col += 1
-        if self.__active_col >= self.__pixel_pin:
+        if self.__active_col >= self.__col_count:
             self.__active_col = 0
 
     def activate_next_row(self):
