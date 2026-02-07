@@ -12,42 +12,58 @@ class Game:
     def run(self):
         while True:
             # Check Rotary Encoder
-            # enc_val = rotary.value()
-            # if enc_val != active_color:
-            #     active_color = enc_val
-            #     neo[active_pixel] = SHOW_COLORS[active_color]
-            #     neo.write()
+            color_idx = self.__controls.dial.value()
+            if color_idx != self.__display.active_color:
+                self.__display.active_color = color_idx
+                self.__display.set_active_pixel(color_idx)
+                self.__display.update()
 
             # Check Button
-            # check_button(button)
-            # --or--
-            # IRQ callback set on button Pin (above)
+            # IRQ callback set on button Pin
+            # See __button_handler() function
 
-            # blink_active_pixel()
+            # Blink Active Pixel
             self.__display.blink_active_pixel()
             time.sleep_ms(50)
 
     def __button_handler(self, btn):
+        start_tick = 0
+        end_tick = 0
         if btn.value() == 0:
-            # incase it's off b/c of blinky, blinky
-            self.__display.set_active_pixel(self.__display.active_color)
+            start_tick = time.ticks_ms()
 
-            self.__display.activate_next_pixel()
-
-            if self.__display.is_active_pixel_off():
-                self.__display.set_active_pixel(self.__display.active_color)
-            else:
-                color_idx = self.__display.get_active_pixel()
-                # update the rotary so that the next turn will start
-                # where the pixel left off
-                self.__controls.dial.set(value=color_idx)
-
-            self.__display.update()
-
-            # Debounce
+            # tick while button is still presses
             while btn.value() == 0:
                 pass
+
+            end_tick = time.ticks_ms()
+
+            # Debounce
             time.sleep_ms(10)
+
+            # print(f"S[{start_tick}] | E[{end_tick}] | Diff[{time.ticks_diff(end_tick, start_tick)}]")
+
+            # Long Press
+            if time.ticks_diff(end_tick, start_tick) >= Controls.BUTTON_LONG_PRESS_MS:
+                # print("-> Button : Long Press")
+                pass
+            # Short (not-long) Press
+            else:
+                # print("-> Button : Short Press")
+                # incase it's off b/c of blinky, blinky
+                self.__display.set_active_pixel(self.__display.active_color)
+
+                self.__display.activate_next_pixel()
+
+                if self.__display.is_active_pixel_off():
+                    self.__display.set_active_pixel(self.__display.active_color)
+                else:
+                    color_idx = self.__display.get_active_pixel()
+                    # update the rotary so that the next turn will start
+                    # where the pixel left off
+                    self.__controls.dial.set(value=color_idx)
+
+                self.__display.update()
 
 
 if __name__ == "__main__":

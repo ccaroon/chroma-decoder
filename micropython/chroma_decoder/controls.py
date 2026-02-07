@@ -3,6 +3,8 @@ from rotary_irq_rp2 import RotaryIRQ
 
 
 class Controls:
+    BUTTON_LONG_PRESS_MS = 500
+
     __BUTTON_PIN = 2
     __ROTARY_PIN1 = 4
     __ROTARy_PIN2 = 5
