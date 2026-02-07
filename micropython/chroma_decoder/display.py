@@ -1,31 +1,34 @@
 from machine import Pin
 from neopixel import NeoPixel
 
+from chroma_decoder.color import Color
+
 
 class Display:
     COLORS = (
-        (255, 0, 0),  # red
-        (255, 2, 141),  # pink
-        (249, 115, 6),  # orange
-        (255, 255, 0),  # yellow
-        (0, 255, 0),  # green
-        (0, 190, 255),  # cyan
-        (0, 0, 255),  # blue
-        (64, 0, 255),  # purple
+        Color(255, 0, 0, 0.5).value,  # red
+        Color(255, 2, 141, 0.5).value,  # pink
+        Color(249, 115, 6, 0.5).value,  # orange
+        Color(255, 255, 0, 0.5).value,  # yellow
+        Color(0, 255, 0, 0.5).value,  # green
+        Color(0, 190, 255, 0.5).value,  # cyan
+        Color(0, 0, 255, 0.5).value,  # blue
+        Color(64, 0, 255, 0.5).value,  # purple
     )
     COLOR_COUNT = len(COLORS)
 
-    SUPPORT_COLORS = {  # noqa: RUF012
-        "off": (0, 0, 0),
-        "incorrect": (0, 0, 0),
-        "correct_color": (255, 255, 255),
-        "correct": (73, 233, 72),
+    SUPPORT_COLORS = {  # noqa: RUF012 - annotate mutable class var
+        "off": Color(0, 0, 0).value,
+        "incorrect": Color(0, 0, 0).value,
+        "correct_color": Color(255, 255, 255, 0.25).value,
+        "correct": Color(73, 233, 72, 0.25).value,
     }
 
-    def __init__(self, rows=8, cols=5):
+    def __init__(self, rows=1, cols=5, **kwargs):
         self.__pixel_pin = 7
         self.__row_count = rows
         self.__col_count = cols
+        self.__swap_rc = kwargs.get("swap_rc", False)
 
         self.__pixel_count = self.__row_count * self.__col_count
 
@@ -48,7 +51,13 @@ class Display:
 
     def __rc_to_idx(self, row, col):
         """Convert a (row,col) to a linear index"""
-        return (row * self.__col_count) + col
+        idx = None
+        if self.__swap_rc:  # noqa: SIM108 - Use ternary
+            idx = (col * self.__row_count) + row
+        else:
+            idx = (row * self.__col_count) + col
+
+        return idx
 
     def activate_next_pixel(self):
         self.__active_col += 1

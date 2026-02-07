@@ -6,7 +6,7 @@ from chroma_decoder.display import Display
 
 class Game:
     def __init__(self):
-        self.__display = Display(1, 5)
+        self.__display = Display(8, 5, swap_rc=True)
         self.__controls = Controls(self.__display.COLOR_COUNT - 1, self.__button_handler)
 
     def run(self):
