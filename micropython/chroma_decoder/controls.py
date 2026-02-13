@@ -10,10 +10,11 @@ class Controls:
     __ROTARy_PIN2 = 5
 
     def __init__(self, dial_pos_count, button_handler):
+        # The Rotary Encoder - Button
         button = Pin(self.__BUTTON_PIN, Pin.IN, Pin.PULL_UP)
         button.irq(trigger=Pin.IRQ_FALLING, handler=button_handler)
 
-        # The Rotary Encoder
+        # The Rotary Encoder - Dial
         self.__dial = RotaryIRQ(
             Pin(self.__ROTARY_PIN1, Pin.IN, Pin.PULL_UP),
             Pin(self.__ROTARy_PIN2, Pin.IN, Pin.PULL_UP),
