@@ -36,18 +36,20 @@ class Game:
         )
 
         # Init the first level / secret code
-        self.__level = self.__gen_level()
+        self.__level = None
+        self.__level_complete = False
+        self.__gen_level()
 
     def __gen_level(self):
         # reset display
         self.__display.reset()
 
-        # gen new level
-        # color / order / position
-        new_level = Level(5, self.__color_set.count)
-        print("Code: ", new_level.code)
+        self.__level_complete = False
 
-        return new_level
+        # gen new level
+        # TODO: dont hard-code number of slots to 5
+        self.__level = Level(5, self.__color_set.count)
+        print("Code: ", self.__level.code)
 
     def __button_short_press(self):
         # incase it's off b/c of blinky, blinky
@@ -66,35 +68,27 @@ class Game:
         self.__display.update()
 
     def __button_long_press(self):
-        # Read the state of each pixel in the active row
-        status = self.__display.active_row_status()
-        # print(status)
-
-        # TODO: if more than one pixel is set to the same color
-        # ...dont activate next row
-        # ...blank out all pixels of that color
-        # ...????
-
-        if -1 in status:
-            # TODO: at least one pixel is not set
-            # ...do ... something!?
-            # first_off_idx = status.index(-1)
-            # self.__display.active_pixel = first_off_idx
-            # active first off pixel
-            pass
-        elif self.__level.code == status:
-            #   - If yes, Check if it's the solution
-            #   - If no, then can't advance
-            # * Check solution & update indicators
-            #   - if yes, celebrate
-            #   - If no, advance to the next row
-            self.__display.fill(self.__color_set.get_support("correct"))
-            # TODO: how to leave this state & move to next level?
-            # pass
+        if self.__level_complete:
+            self.__gen_level()
         else:
-            indicators = self.__level.check_code(status)
-            self.__display.set_indicator_row(indicators)
-            self.__display.activate_next_row()
+            # Read the state of each pixel in the active row
+            status = self.__display.active_row_status()
+            # print(status)
+
+            # TODO: if more than one pixel is set to the same color
+            # ...dont activate next row
+            # ...blank out all pixels of that color
+            # ...????
+
+            if self.__level.code == status:
+                self.__display.disable_blinker()
+                self.__display.glyph("check-mark", "correct")
+                self.__level_complete = True
+            elif -1 not in status:
+                indicators = self.__level.check_code(status)
+                self.__display.set_indicator_row(indicators)
+                # TODO: check if at end of chances
+                self.__display.activate_next_row()
 
     def __button_handler(self, btn):
         start_tick = 0

@@ -1,6 +1,8 @@
 from machine import Pin
 from neopixel import NeoPixel
 
+from chroma_decoder.glyph import Glyph
+
 
 class Display:
     def __init__(self, rows=1, cols=5, **kwargs):
@@ -21,10 +23,13 @@ class Display:
             self.__pixel_count,
         )
 
+        self.__indicator_row = self.__row_count - 1
+
+        self.__blinker_active = True
         self.__active_row = 0
         self.__active_col = 0
-        self.__indicator_row = self.__row_count - 1
         self.active_color = 0
+        self.reset()
 
     @property
     def active_idx(self):
@@ -35,6 +40,12 @@ class Display:
     # def active_idx(self, idx):
     #     # TODO: convert idx to r,c
     #     pass
+
+    def disable_blinker(self):
+        self.__blinker_active = False
+
+    def enable_blinker(self):
+        self.__blinker_active = True
 
     def __rc_to_idx(self, row, col):
         """Convert a (row,col) to a linear index"""
@@ -125,21 +136,43 @@ class Display:
         Args:
             _ (Timer): Unused
         """
-        if self.__pixels[self.active_idx] == self.__color_set.get_support("off"):
-            color = self.__color_set.get(self.active_color)
-        else:
-            color = self.__color_set.get_support("off")
+        if self.__blinker_active:
+            if self.__pixels[self.active_idx] == self.__color_set.get_support("off"):
+                color = self.__color_set.get(self.active_color)
+            else:
+                color = self.__color_set.get_support("off")
 
-        self.__pixels[self.active_idx] = color
-        self.__pixels.write()
+            self.__pixels[self.active_idx] = color
+            self.__pixels.write()
+
+    def glyph(self, name, color):
+        # clear the "screen"
+        self.__pixels.fill(self.__color_set.get_support("off"))
+
+        glyph = Glyph.get(name)
+
+        for ridx, row in enumerate(glyph):
+            for cidx, col in enumerate(row):
+                if col == 1:
+                    idx = self.__rc_to_idx(ridx, cidx)
+                    self.__pixels[idx] = self.__color_set.get_support(color)
+
+        self.update()
 
     def fill(self, color: tuple):
         self.__pixels.fill(color)
         self.update()
 
     def reset(self):
+        self.__active_row = 0
+        self.__active_col = 0
+        self.active_color = 0
+
         self.__pixels.fill(self.__color_set.get_support("off"))
         self.set(self.__active_row, self.__active_col, self.active_color)
+
+        self.enable_blinker()
+
         self.update()
 
     def update(self):

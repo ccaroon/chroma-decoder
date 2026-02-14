@@ -33,6 +33,7 @@ class ColorSet:
     __SUPPORT_COLORS = {  # noqa: RUF012 - annotate mutable class var
         # OFF
         "OFF": Color(0, 0, 0).value,
+        "WRONG": Color(255, 0, 0, 0.25).value,
         # color not used (spot does not matter)
         "UNUSED": Color(0, 0, 0).value,
         # color used, BUT not in correct spot (partially correct)
