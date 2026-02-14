@@ -1,24 +1,41 @@
 import time
 
+from machine import Timer
+
 from chroma_decoder.color_set import ColorSet
 from chroma_decoder.controls import Controls
 from chroma_decoder.display import Display
+from chroma_decoder.level import Level
 
 
 class Game:
+    __BLINKER_PERIOD = 300
+
     def __init__(self):
+        # Display
         self.__color_set = ColorSet("default")
         self.__display = Display(
-            rows=8,
-            cols=5,
+            rows=5,
+            cols=8,
             color_set=self.__color_set,
-            swap_rc=True,
+            rotated=True,
         )
+
+        # Controls
         self.__controls = Controls(
             self.__color_set.count - 1,
             self.__button_handler,
         )
 
+        # Cause the Active Pixel to blink every-so-often
+        blinker = Timer(-1)
+        blinker.init(
+            mode=Timer.PERIODIC,
+            period=self.__BLINKER_PERIOD,
+            callback=self.__display.blink_active_pixel,
+        )
+
+        # Init the first level / secret code
         self.__level = self.__gen_level()
 
     def __gen_level(self):
@@ -27,24 +44,10 @@ class Game:
 
         # gen new level
         # color / order / position
-        # self.__level = Level(color_choices=self.__color_set.count)
+        new_level = Level(5, self.__color_set.count)
+        print("Code: ", new_level.code)
 
-    def run(self):
-        while True:
-            # Check Rotary Encoder
-            color_idx = self.__controls.dial.value()
-            if color_idx != self.__display.active_color:
-                self.__display.active_color = color_idx
-                self.__display.set_active_pixel(color_idx)
-                self.__display.update()
-
-            # Check Button
-            # IRQ callback set on button Pin
-            # See __button_handler() function
-
-            # Blink Active Pixel
-            self.__display.blink_active_pixel()
-            time.sleep_ms(50)
+        return new_level
 
     def __button_short_press(self):
         # incase it's off b/c of blinky, blinky
@@ -65,22 +68,32 @@ class Game:
     def __button_long_press(self):
         # Read the state of each pixel in the active row
         status = self.__display.active_row_status()
-        print(status)
+        # print(status)
+
+        # TODO: if more than one pixel is set to the same color
+        # ...dont activate next row
+        # ...blank out all pixels of that color
+        # ...????
 
         if -1 in status:
             # TODO: at least one pixel is not set
-            #       ...do ... something!?
-            pass
+            # ...do ... something!?
             # first_off_idx = status.index(-1)
             # self.__display.active_pixel = first_off_idx
             # active first off pixel
-        # elif self.__check_solution()
-        # #   - If yes, Check if it's the solution
-        # #   - If no, then can't advance
-        # # * Check solution & update indicators
-        # #   - if yes, celebrate
-        # #   - If no, advance to the next row
+            pass
+        elif self.__level.code == status:
+            #   - If yes, Check if it's the solution
+            #   - If no, then can't advance
+            # * Check solution & update indicators
+            #   - if yes, celebrate
+            #   - If no, advance to the next row
+            self.__display.fill(self.__color_set.get_support("correct"))
+            # TODO: how to leave this state & move to next level?
+            # pass
         else:
+            indicators = self.__level.check_code(status)
+            self.__display.set_indicator_row(indicators)
             self.__display.activate_next_row()
 
     def __button_handler(self, btn):
@@ -108,3 +121,21 @@ class Game:
             else:
                 # print("-> Button : Short Press")
                 self.__button_short_press()
+
+    def run(self):
+        while True:
+            # Check Rotary Encoder
+            color_idx = self.__controls.dial.value()
+            if color_idx != self.__display.active_color:
+                self.__display.active_color = color_idx
+                self.__display.set_active_pixel(color_idx)
+                self.__display.update()
+
+            # Check Button
+            # IRQ callback set on button Pin
+            # See __button_handler() function
+
+            # Blink Active Pixel
+            # See the Timer in __init__()
+            # self.__display.blink_active_pixel()
+            # time.sleep_ms(50)

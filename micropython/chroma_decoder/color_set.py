@@ -4,21 +4,21 @@ from chroma_decoder.color import Color
 class ColorSet:
     __NAMED_SETS = {  # noqa: RUF012 - annotate mutable class var
         "default": (
-            Color(255, 0, 0, 0.5).value,  # red
-            Color(255, 2, 141, 0.5).value,  # pink
-            Color(249, 115, 6, 0.5).value,  # orange
-            Color(255, 255, 0, 0.5).value,  # yellow
-            Color(0, 255, 0, 0.5).value,  # green
-            Color(0, 190, 255, 0.5).value,  # cyan
-            Color(0, 0, 255, 0.5).value,  # blue
-            Color(64, 0, 255, 0.5).value,  # purple
+            Color(255, 0, 0, 0.5).value,  #   0 - red
+            Color(255, 2, 141, 0.5).value,  # 1 - pink
+            Color(249, 115, 6, 0.5).value,  # 2 - orange
+            Color(255, 255, 0, 0.5).value,  # 3 - yellow
+            Color(0, 255, 0, 0.5).value,  #   4 - green
+            Color(0, 190, 255, 0.5).value,  # 5 - cyan
+            Color(0, 0, 255, 0.5).value,  #   6 - blue
+            Color(64, 0, 255, 0.5).value,  #  7 - purple
         ),
         "christmas": (
-            Color(255, 0, 0, 0.5).value,  # red
-            Color(0, 255, 0, 0.5).value,  # green
-            Color(0, 0, 255, 0.5).value,  # blue
-            Color(255, 255, 255, 0.5).value,  # white
-            Color(255, 255, 0, 0.5).value,  # yellow
+            Color(255, 0, 0, 0.5).value,  #     0 - red
+            Color(0, 255, 0, 0.5).value,  #     1 - green
+            Color(0, 0, 255, 0.5).value,  #     2 - blue
+            Color(255, 255, 255, 0.5).value,  # 3 - white
+            Color(255, 255, 0, 0.5).value,  #   4 - yellow
         ),
         # White -to- Red (shades of pink)
         "valentines": (
@@ -31,10 +31,14 @@ class ColorSet:
     }
 
     __SUPPORT_COLORS = {  # noqa: RUF012 - annotate mutable class var
-        "off": Color(0, 0, 0).value,
-        "incorrect": Color(0, 0, 0).value,
-        "correct_color": Color(255, 255, 255, 0.25).value,
-        "correct": Color(73, 233, 72, 0.25).value,
+        # OFF
+        "OFF": Color(0, 0, 0).value,
+        # color not used (spot does not matter)
+        "UNUSED": Color(0, 0, 0).value,
+        # color used, BUT not in correct spot (partially correct)
+        "PARTIAL": Color(255, 255, 255, 0.25).value,
+        # color used AND is in correct spot
+        "CORRECT": Color(73, 233, 72, 0.25).value,
     }
 
     def __init__(self, name="default"):
@@ -53,7 +57,7 @@ class ColorSet:
         return self.__colors[idx]
 
     def get_support(self, name):
-        return self.__SUPPORT_COLORS.get(name)
+        return self.__SUPPORT_COLORS.get(name.upper())
 
     def index(self, color):
         return self.__colors.index(color)
