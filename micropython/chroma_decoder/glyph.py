@@ -16,11 +16,11 @@ class Glyph:
     CHECK_MARK = (
         (0, 0, 0, 0, 0),
         (0, 0, 0, 0, 0),
-        (0, 0, 0, 0, 0),
         (0, 0, 0, 0, 1),
         (0, 0, 0, 1, 0),
         (1, 0, 1, 0, 0),
         (0, 1, 0, 0, 0),
+        (0, 0, 0, 0, 0),
         (0, 0, 0, 0, 0),
     )
 
@@ -41,7 +41,7 @@ class Glyph:
 
         if name == "check-mark":
             glpyh = cls.CHECK_MARK
-        elif name == "wrong_x":
+        elif name == "wrong-x":
             glpyh = cls.WRONG_X
         else:
             glpyh = None

@@ -1,6 +1,7 @@
 from machine import Pin
 from neopixel import NeoPixel
 
+from chroma_decoder.color import Color
 from chroma_decoder.glyph import Glyph
 
 
@@ -36,6 +37,10 @@ class Display:
         """The Index of the Active Pixel"""
         return self.__rc_to_idx(self.__active_row, self.__active_col)
 
+    @property
+    def size(self):
+        return (self.__row_count, self.__col_count)
+
     # @property.setter
     # def active_idx(self, idx):
     #     # TODO: convert idx to r,c
@@ -46,6 +51,20 @@ class Display:
 
     def enable_blinker(self):
         self.__blinker_active = True
+
+    def __resolve_color(self, color_id):
+        color = None
+        if isinstance(color_id, int):
+            color = self.__color_set.get(color_id)
+        elif isinstance(color_id, Color):
+            color = color_id.value
+        elif isinstance(color_id, tuple):
+            color = color_id
+        else:
+            msg = f"Invalid type for color: {color_id}/{type(color_id)}"
+            raise TypeError(msg)
+
+        return color
 
     def __rc_to_idx(self, row, col):
         """Convert a (row,col) to a linear index"""
@@ -104,9 +123,18 @@ class Display:
             self.__active_col = 0
             self.__active_row = next_row
 
-    def set(self, row, col, color_idx):
+        return self.__active_row
+
+    def set(self, row, col, new_color):
+        """
+        Set the color of the pixel at (row, col)
+
+        Args:
+            new_color (int|tuple|Color): A int color index, tuple or Color
+        """
         idx = self.__rc_to_idx(row, col)
-        self.__pixels[idx] = self.__color_set.get(color_idx)
+        color = self.__resolve_color(new_color)
+        self.__pixels[idx] = color
 
     def get(self, row, col):
         idx = self.__rc_to_idx(row, col)
@@ -122,6 +150,10 @@ class Display:
     def get_active_pixel(self):
         """Get the Active Pixel's Color"""
         return self.__color_set.index(self.__pixels[self.active_idx])
+
+    def set_active_row(self, colors: list):
+        for cidx, color_idx in enumerate(colors):
+            self.set(self.__active_row, cidx, color_idx)
 
     def set_indicator_row(self, statuses):
         for col in range(self.__col_count):
@@ -159,7 +191,8 @@ class Display:
 
         self.update()
 
-    def fill(self, color: tuple):
+    def fill(self, color_id):
+        color = self.__resolve_color(color_id)
         self.__pixels.fill(color)
         self.update()
 
