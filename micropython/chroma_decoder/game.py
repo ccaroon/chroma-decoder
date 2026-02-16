@@ -53,25 +53,31 @@ class Game:
         self.__level = Level(size[1], self.__color_set.count, size[0] - 1)
         print("Code: ", self.__level.code, size[0] - 1)
 
+    def __is_row_valid(self, status):
+        count = status.count(self.__display.active_color)
+        return count <= 1
+
+    def __remove_dups(self, status):
+        new_colors = []
+        for color_idx in status:
+            if color_idx in (self.__display.active_color, -1):
+                new_colors.append(self.__color_set.get_support("off"))
+            else:
+                new_colors.append(color_idx)
+
+        self.__display.set_active_row(new_colors)
+        # Set the active pixel to the active color b/c the above
+        # set_active_row() call turned it off
+        self.__display.set_active_pixel(self.__display.active_color)
+
     def __button_short_press(self):
         # incase it's off b/c of blinky, blinky
         self.__display.set_active_pixel(self.__display.active_color)
 
         # Check for duplicate instances of the active_color in the active row
         status = self.__display.active_row_status()
-        count = status.count(self.__display.active_color)
-        if count > 1:
-            new_colors = []
-            for color_idx in status:
-                if color_idx in (self.__display.active_color, -1):
-                    new_colors.append(self.__color_set.get_support("off"))
-                else:
-                    new_colors.append(color_idx)
-
-            self.__display.set_active_row(new_colors)
-            # Set the active pixel to the active color b/c the above
-            # set_active_row() call turned it off
-            self.__display.set_active_pixel(self.__display.active_color)
+        if not self.__is_row_valid(status):
+            self.__remove_dups(status)
 
         # Move to next pixel
         self.__display.activate_next_pixel()
@@ -93,9 +99,12 @@ class Game:
             # Read the state of each pixel in the active row
             status = self.__display.active_row_status()
 
+            if not self.__is_row_valid(status):
+                self.__remove_dups(status)
+                self.__display.update()
             # If -1 in status, then not all pixels/cols in the row
             # have been set yet.
-            if -1 not in status:
+            elif -1 not in status:
                 if self.__level.code == status:
                     self.__display.disable_blinker()
                     self.__display.glyph("check-mark", "correct")
