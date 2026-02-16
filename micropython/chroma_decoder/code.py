@@ -1,7 +1,7 @@
 import random
 
 
-class Level:
+class Code:
     def __init__(self, slot_cnt, color_cnt, tries):
         # choose `slot_cnt` colors out of `color_cnt`
         # no duplicates
@@ -18,7 +18,7 @@ class Level:
         self.__tries = 0
 
     @property
-    def code(self):
+    def value(self):
         return self.__code
 
     @property
@@ -28,7 +28,7 @@ class Level:
     def out_of_tries(self):
         return self.__tries >= self.__max_tries
 
-    def check_code(self, status):
+    def check(self, status):
         self.__tries += 1
 
         indicators = []

@@ -2,10 +2,10 @@ import time
 
 from machine import Timer
 
+from chroma_decoder.code import Code
 from chroma_decoder.color_set import ColorSet
 from chroma_decoder.controls import Controls
 from chroma_decoder.display import Display
-from chroma_decoder.level import Level
 
 
 class Game:
@@ -35,23 +35,22 @@ class Game:
             callback=self.__display.blink_active_pixel,
         )
 
-        # Init the first level / secret code
-        self.__level = None
-        self.__level_complete = False
-        self.__gen_level()
+        # Init the first secret code
+        self.__code = None
+        self.__code_solved = False
+        self.__gen_code()
 
-    def __gen_level(self):
+    def __gen_code(self):
         # reset display
         self.__display.reset()
         self.__controls.dial.set(value=self.__display.active_color)
 
-        self.__level_complete = False
+        self.__code_solved = False
 
-        # gen new level
         # size[0] = rows | size[1] = cols
         size = self.__display.size
-        self.__level = Level(size[1], self.__color_set.count, size[0] - 1)
-        print("Code: ", self.__level.code, size[0] - 1)
+        self.__code = Code(size[1], self.__color_set.count, size[0] - 1)
+        print("Code: ", self.__code.value, size[0] - 1)
 
     def __is_row_valid(self, status):
         count = status.count(self.__display.active_color)
@@ -93,8 +92,8 @@ class Game:
         self.__display.update()
 
     def __button_long_press(self):
-        if self.__level_complete:
-            self.__gen_level()
+        if self.__code_solved:
+            self.__gen_code()
         else:
             # Read the state of each pixel in the active row
             status = self.__display.active_row_status()
@@ -105,19 +104,19 @@ class Game:
             # If -1 in status, then not all pixels/cols in the row
             # have been set yet.
             elif -1 not in status:
-                if self.__level.code == status:
+                if self.__code.value == status:
                     self.__display.disable_blinker()
                     self.__display.glyph("check-mark", "correct")
-                    self.__level_complete = True
+                    self.__code_solved = True
                 else:
-                    indicators = self.__level.check_code(status)
+                    indicators = self.__code.check(status)
                     self.__display.set_indicator_row(indicators)
                     self.__display.activate_next_row()
 
-                if self.__level.out_of_tries():
+                if self.__code.out_of_tries():
                     self.__display.disable_blinker()
                     self.__display.glyph("wrong-x", "wrong")
-                    self.__level_complete = True
+                    self.__code_solved = True
 
     def __button_handler(self, btn):
         start_tick = 0
