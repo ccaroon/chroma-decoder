@@ -8,7 +8,7 @@ class Code:
         code = []
         choices = list(range(color_cnt))
         for _ in range(slot_cnt):
-            color_idx = random.choice(choices)  # noqa: S311 (random generators are not suitable for cryptographic purposes)
+            color_idx = random.choice(choices)
             code.append(color_idx)
             choices.remove(color_idx)
 

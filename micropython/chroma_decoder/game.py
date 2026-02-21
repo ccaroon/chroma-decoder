@@ -6,6 +6,7 @@ from chroma_decoder.code import Code
 from chroma_decoder.color_set import ColorSet
 from chroma_decoder.controls import Controls
 from chroma_decoder.display import Display
+from chroma_decoder.sound import Sound
 
 
 class Game:
@@ -26,6 +27,8 @@ class Game:
             self.__color_set.count - 1,
             self.__button_handler,
         )
+
+        self.__sound = Sound()
 
         # Cause the Active Pixel to blink every-so-often
         blinker = Timer(-1)
@@ -72,6 +75,8 @@ class Game:
     def __button_short_press(self):
         # incase it's off b/c of blinky, blinky
         self.__display.set_active_pixel(self.__display.active_color)
+
+        self.__sound.tone(800, 20)
 
         # Check for duplicate instances of the active_color in the active row
         status = self.__display.active_row_status()

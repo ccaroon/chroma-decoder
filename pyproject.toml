@@ -31,4 +31,4 @@ packages = ["chroma-decoder.py"]
 
 
 [tool.ruff.lint]
-ignore = ["T201"]
+ignore = ["T201", "S311"]
